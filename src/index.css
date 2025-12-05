@@ -8,5 +8,69 @@ html, body, #root {
 
 body {
   margin: 0;
-  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  font-family: 'Poppins', ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  background: linear-gradient(180deg, #0f172a 0%, #071029 50%, #041026 100%);
+  color: #e6eef8;
 }
+
+/* Card and glass utility used across components */
+.card {
+  background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+  border: 1px solid rgba(255,255,255,0.04);
+  box-shadow: 0 6px 18px rgba(2,6,23,0.6);
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 30px rgba(2,6,23,0.7);
+}
+
+.muted { color: rgba(230,238,248,0.6); }
+.accent { color: #06b6d4; }
+
+/* Smooth buttons */
+.btn { transition: transform 120ms ease, box-shadow 120ms ease; }
+.btn:active { transform: translateY(1px); }
+
+/* Docs-specific helpers */
+.docs-title {
+  background: linear-gradient(90deg, #7dd3fc, #60a5fa, #a78bfa);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.docs-lead { color: #ffffff; }
+.callout {
+  border-left: 4px solid rgba(96,165,250,0.9);
+  padding: 12px 14px;
+  background: linear-gradient(180deg, rgba(96,165,250,0.03), rgba(167,139,250,0.02));
+  margin-bottom: 12px;
+}
+.doc-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: linear-gradient(90deg,#06b6d4,#3b82f6);
+  color: #001219;
+  font-weight: 600;
+  font-size: 12px;
+}
+.doc-code { background: rgba(0,0,0,0.4); padding: 2px 6px; border-radius: 4px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, 'Roboto Mono', monospace; }
+.important { color: #7dd3fc; font-weight:600; }
+
+ a.doc-link { color: #60a5fa; text-decoration: underline; }
+
+/* Light docs container overrides (for readable black text) */
+.docs-light { background: #ffffff; color: #0b1220; border-radius: 12px; }
+.docs-light .card {
+  background: #ffffff;
+  border: 1px solid rgba(12,20,30,0.06);
+  box-shadow: 0 6px 18px rgba(12,20,30,0.06);
+}
+.docs-light .doc-badge { background: linear-gradient(90deg,#f59e0b,#f97316); color: #081018; }
+.docs-light .doc-code { background: #f3f4f6; color: #0b1220; }
+.docs-light .callout { background: linear-gradient(180deg, rgba(99,102,241,0.06), rgba(99,102,241,0.03)); border-left-color: rgba(99,102,241,0.9); }
+.docs-light .docs-title { background: linear-gradient(90deg,#0ea5a4,#3b82f6,#8b5cf6); -webkit-background-clip:text; background-clip:text; color:transparent; }
+.docs-light .docs-lead { color: #0b1220; }
+
+

@@ -36,7 +36,8 @@ export default function Playlist({ currentId, storageKey = "fmp_playlist", initi
       return;
     }
     const title = id;
-    setItems([{ id, title }, ...items]);
+    const thumb = `https://i.ytimg.com/vi/${id}/mqdefault.jpg`;
+    setItems([{ id, title, thumbnail: thumb }, ...items]);
     setInput("");
   };
 
@@ -63,12 +64,13 @@ export default function Playlist({ currentId, storageKey = "fmp_playlist", initi
         {items.map((it) => (
           <div
             key={it.id}
-            className={`flex items-center justify-between p-2 rounded ${it.id === currentId ? "bg-blue-700" : "bg-gray-800"}`}
+            className={`flex items-center justify-between p-2 rounded card ${it.id === currentId ? "border-l-4 border-cyan-400" : ""}`}
           >
-            <div className="flex-1">
+            <div className="flex items-center gap-3">
+              <img src={it.thumbnail || `https://i.ytimg.com/vi/${it.id}/mqdefault.jpg`} alt="thumb" className="w-16 h-10 object-cover rounded" />
               <button
                 onClick={() => navigate(`/player/${it.id}`)}
-                className="text-left text-white hover:underline truncate"
+                className="text-left text-white hover:underline truncate max-w-[10rem]"
                 title={it.title}
               >
                 {it.title}
@@ -77,14 +79,14 @@ export default function Playlist({ currentId, storageKey = "fmp_playlist", initi
             <div className="ml-2 flex gap-1">
               <button
                 onClick={() => navigate(`/player/${it.id}`)}
-                className="px-2 py-1 bg-green-600 rounded text-xs"
+                className="px-2 py-1 bg-green-600 rounded text-xs btn"
                 title="Play"
               >
                 ▶
               </button>
               <button
                 onClick={() => remove(it.id)}
-                className="px-2 py-1 bg-red-600 rounded text-xs"
+                className="px-2 py-1 bg-red-600 rounded text-xs btn"
                 title="Remove"
               >
                 ✕
