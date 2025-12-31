@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/metrics/:path*",
+      "destination": "https://gctgupsm.ina.stape.io/:path*"
+    }
+  ]
+}
