@@ -22,9 +22,9 @@ export default function Player() {
       : null;
 
     const check = () => {
-      const isLandscape = mq ? mq.matches : false;
-      const isSmall = typeof window !== "undefined" ? window.innerWidth < 768 : false;
-      setLandscapeMode(!!id && isLandscape && isSmall);
+      // Disable automatic landscape/fullscreen activation on load.
+      // Only enter fullscreen when user explicitly requests it.
+      setLandscapeMode(false);
     };
 
     check();
@@ -57,7 +57,18 @@ export default function Player() {
     <div className="bg-black min-h-screen text-white p-4">
       <div className="max-w-6xl mx-auto flex flex-col md:flex-row gap-4">
         <main className="flex-1">
-          <VideoPlayer videoId={id} fill={landscapeMode} />
+          <div className="relative">
+            {/* Keep player inside normal layout by default. */}
+            <VideoPlayer videoId={id} />
+
+            {/* Fullscreen button: user must explicitly enter fullscreen. */}
+            <button
+              onClick={() => setLandscapeMode(true)}
+              className="absolute top-2 right-2 z-10 px-3 py-1 bg-black/60 text-white rounded-md border border-white/20 text-sm"
+            >
+              Fullscreen
+            </button>
+          </div>
 
           <div className="mt-4">
             <Notes videoId={id} />

@@ -2,75 +2,141 @@
 @tailwind components;
 @tailwind utilities;
 
-html, body, #root {
+@layer base {
+  :root {
+    --brand-orange: #f97316;
+    --brand-amber: #fbbf24;
+    --bg-app: #f8fafc; /* Very soft slate for the main background */
+    --text-main: #0f172a;
+    --text-muted: #64748b;
+  }
+
+  html, body, #root {
+    height: 100%;
+    width: 100%;
+    overflow: hidden; /* Prevent body scroll, handle scrolling in specific containers */
+  }
+
+  body {
+    margin: 0;
+    font-family: 'Inter', 'Poppins', system-ui, -apple-system, sans-serif;
+    background-color: var(--bg-app);
+    color: var(--text-main);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* ==========================================================================
+   PREMIUM CUSTOM SCROLLBARS (Crucial for SaaS feel)
+   ========================================================================== */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+/* Custom scrollbar utility class for specific containers */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+/* ==========================================================================
+   WORKSPACE & WIDGET DRAG-AND-DROP UX
+   ========================================================================== */
+.workspace {
+  position: relative;
+  width: 100%;
   height: 100%;
+  background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+  background-size: 24px 24px; /* Subtle dot grid background for the canvas */
 }
 
-body {
-  margin: 0;
-  font-family: 'Poppins', ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-  background: linear-gradient(180deg, #0f172a 0%, #071029 50%, #041026 100%);
-  color: #e6eef8;
+/* Base Widget Styling */
+.workspace-rnd-item {
+  transition: box-shadow 200ms ease, transform 200ms ease;
+  will-change: transform, box-shadow;
 }
 
-/* Card and glass utility used across components */
-.card {
-  background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
-  border: 1px solid rgba(255,255,255,0.04);
-  box-shadow: 0 6px 18px rgba(2,6,23,0.6);
-  transition: transform 160ms ease, box-shadow 160ms ease;
-}
-.card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 14px 30px rgba(2,6,23,0.7);
+/* The element actively being dragged */
+.workspace-rnd-item.dragging {
+  opacity: 0.95;
+  z-index: 9999 !important;
+  /* Glowing brand-colored shadow while dragging */
+  box-shadow: 0 25px 50px -12px rgba(249, 115, 22, 0.25), 0 0 0 2px var(--brand-orange) !important; 
+  cursor: grabbing !important;
 }
 
-.muted { color: rgba(230,238,248,0.6); }
-.accent { color: #06b6d4; }
-
-/* Smooth buttons */
-.btn { transition: transform 120ms ease, box-shadow 120ms ease; }
-.btn:active { transform: translateY(1px); }
-
-/* Docs-specific helpers */
-.docs-title {
-  background: linear-gradient(90deg, #7dd3fc, #60a5fa, #a78bfa);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+/* ==========================================================================
+   CUSTOM RESIZE HANDLES
+   ========================================================================== */
+/* Hide default ugly handles */
+.react-resizable-handle {
+  opacity: 0;
+  transition: opacity 150ms ease, background-color 150ms ease;
 }
-.docs-lead { color: #ffffff; }
-.callout {
-  border-left: 4px solid rgba(96,165,250,0.9);
-  padding: 12px 14px;
-  background: linear-gradient(180deg, rgba(96,165,250,0.03), rgba(167,139,250,0.02));
-  margin-bottom: 12px;
+
+/* Show on widget hover */
+.workspace-rnd-item:hover .react-resizable-handle {
+  opacity: 1;
 }
-.doc-badge {
-  display: inline-block;
-  padding: 2px 8px;
-  border-radius: 999px;
-  background: linear-gradient(90deg,#06b6d4,#3b82f6);
-  color: #001219;
-  font-weight: 600;
-  font-size: 12px;
+
+/* Custom styling for the bottom-right resize corner */
+.react-resizable-handle-se {
+  width: 20px !important;
+  height: 20px !important;
+  bottom: 4px !important;
+  right: 4px !important;
+  background-color: transparent !important;
+  cursor: nwse-resize !important;
 }
-.doc-code { background: rgba(0,0,0,0.4); padding: 2px 6px; border-radius: 4px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, 'Roboto Mono', monospace; }
-.important { color: #7dd3fc; font-weight:600; }
 
- a.doc-link { color: #60a5fa; text-decoration: underline; }
-
-/* Light docs container overrides (for readable black text) */
-.docs-light { background: #ffffff; color: #0b1220; border-radius: 12px; }
-.docs-light .card {
-  background: #ffffff;
-  border: 1px solid rgba(12,20,30,0.06);
-  box-shadow: 0 6px 18px rgba(12,20,30,0.06);
+.react-resizable-handle-se::after {
+  content: "";
+  position: absolute;
+  right: 6px;
+  bottom: 6px;
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid #cbd5e1;
+  border-bottom: 2px solid #cbd5e1;
+  border-radius: 1px;
+  transition: border-color 150ms ease;
 }
-.docs-light .doc-badge { background: linear-gradient(90deg,#f59e0b,#f97316); color: #081018; }
-.docs-light .doc-code { background: #f3f4f6; color: #0b1220; }
-.docs-light .callout { background: linear-gradient(180deg, rgba(99,102,241,0.06), rgba(99,102,241,0.03)); border-left-color: rgba(99,102,241,0.9); }
-.docs-light .docs-title { background: linear-gradient(90deg,#0ea5a4,#3b82f6,#8b5cf6); -webkit-background-clip:text; background-clip:text; color:transparent; }
-.docs-light .docs-lead { color: #0b1220; }
 
+.react-resizable-handle-se:hover::after {
+  border-color: var(--brand-orange); /* Lights up orange when hovering over the resize handle */
+}
 
+/* ==========================================================================
+   UTILITIES & ANIMATIONS
+   ========================================================================== */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+/* Smooth fade in for elements */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}

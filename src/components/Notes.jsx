@@ -3,18 +3,13 @@ import React, { useEffect, useState, useRef } from "react";
 function cleanAndStructure(text) {
   if (!text) return "";
 
-  // Normalize line endings and trim
   let t = text.replace(/\r\n/g, "\n").trim();
-
-  // Collapse multiple blank lines
   t = t.replace(/\n{3,}/g, "\n\n");
 
-  // Trim each line
   const lines = t.split("\n").map((l) => l.trim());
-
-  // Convert dash-starting lines to bullets and group short lines into paragraphs
   const out = [];
   let buffer = [];
+
   for (let line of lines) {
     if (line === "") {
       if (buffer.length) {
@@ -33,7 +28,6 @@ function cleanAndStructure(text) {
       continue;
     }
 
-    // If line contains a colon and is short, treat it as a heading
     if (/^[A-Za-z ]{1,30}:$/.test(line) || /^[A-Za-z ]{1,30}:\s/.test(line)) {
       if (buffer.length) {
         out.push(buffer.join(" "));
@@ -45,50 +39,59 @@ function cleanAndStructure(text) {
 
     buffer.push(line);
   }
-  if (buffer.length) out.push(buffer.join(" "));
 
+  if (buffer.length) out.push(buffer.join(" "));
   return out.join("\n\n");
 }
 
 export default function Notes({ videoId }) {
   const storageKey = `fmp_notes_${videoId}`;
   const [text, setText] = useState("");
-  const [status, setStatus] = useState("");
+  const [status, setStatus] = useState("Saved");
   const timeoutRef = useRef(null);
 
+  // Load notes
   useEffect(() => {
     if (!videoId) return;
     try {
-      const raw = localStorage.getItem(storageKey);
-      if (raw) setText(raw);
-      else setText("");
+      const saved = localStorage.getItem(storageKey);
+      setText(saved || "");
     } catch {
       setText("");
     }
   }, [videoId]);
 
+  // Auto-save
   useEffect(() => {
     if (!videoId) return;
-    // debounce autosave
-    setStatus("Saving...");
+
+    setStatus("Auto-saving...");
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
+
     timeoutRef.current = setTimeout(() => {
       try {
         localStorage.setItem(storageKey, text);
-        setStatus(`Saved ${new Date().toLocaleTimeString()}`);
-      } catch (e) {
+        setStatus("Saved");
+      } catch {
         setStatus("Error saving");
       }
     }, 800);
 
-    return () => {
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    };
+    return () => clearTimeout(timeoutRef.current);
   }, [text, videoId]);
 
+  // Manual Save
+  const handleSave = () => {
+    try {
+      localStorage.setItem(storageKey, text);
+      setStatus("Saved manually");
+    } catch {
+      setStatus("Error saving");
+    }
+  };
+
   const handleClean = () => {
-    const cleaned = cleanAndStructure(text);
-    setText(cleaned);
+    setText(cleanAndStructure(text));
     setStatus("Cleaned");
   };
 
@@ -103,33 +106,46 @@ export default function Notes({ videoId }) {
   };
 
   const handleClear = () => {
-    if (!confirm("Clear notes for this video?")) return;
+    if (!confirm("Clear notes?")) return;
     setText("");
-    try {
-      localStorage.removeItem(storageKey);
-    } catch {}
+    localStorage.removeItem(storageKey);
     setStatus("Cleared");
   };
 
   return (
-    <div className="mt-4 p-3 rounded card">
+    <div className="mt-4 p-4 rounded-xl bg-white shadow-lg">
+      {/* Header */}
       <div className="flex items-center justify-between mb-2">
-        <h3 className="text-white font-semibold">Notes Organizer</h3>
-        <div className="text-gray-300 text-xs">{status}</div>
+        <h3 className="text-gray-800 font-semibold">Notes</h3>
+        <span className="text-xs text-gray-500">{status}</span>
       </div>
 
+      {/* Textarea */}
       <textarea
         value={text}
         onChange={(e) => setText(e.target.value)}
         rows={10}
-        className="w-full p-3 rounded bg-slate-50 text-black resize-vertical shadow-inner"
+        className="w-full p-3 rounded-lg bg-gray-50 text-black resize-vertical shadow-inner outline-none focus:ring-2 focus:ring-blue-400"
         placeholder="Write notes while watching..."
       />
 
-      <div className="flex gap-2 mt-3">
-        <button onClick={handleClean} className="px-3 py-1 bg-gradient-to-r from-blue-600 to-cyan-500 rounded text-white text-sm btn">Smart Clean</button>
-        <button onClick={handleExport} className="px-3 py-1 bg-gradient-to-r from-green-600 to-emerald-500 rounded text-white text-sm btn">Export</button>
-        <button onClick={handleClear} className="px-3 py-1 bg-gradient-to-r from-red-600 to-rose-500 rounded text-white text-sm btn">Clear</button>
+      {/* Actions */}
+      <div className="flex flex-wrap gap-2 mt-3">
+        <button onClick={handleSave} className="px-3 py-1 rounded bg-indigo-600 text-white text-sm hover:opacity-90">
+          Save
+        </button>
+
+        <button onClick={handleClean} className="px-3 py-1 rounded bg-blue-500 text-white text-sm hover:opacity-90">
+          Smart Clean
+        </button>
+
+        <button onClick={handleExport} className="px-3 py-1 rounded bg-green-500 text-white text-sm hover:opacity-90">
+          Export
+        </button>
+
+        <button onClick={handleClear} className="px-3 py-1 rounded bg-red-500 text-white text-sm hover:opacity-90">
+          Clear
+        </button>
       </div>
     </div>
   );
